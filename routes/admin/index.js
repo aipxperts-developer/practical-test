@@ -6,6 +6,7 @@ var staticData = require("../../models/transactions");
 
 router.get('/transactions', async function (req, res, next) {
     var query = req.query;
+    console.log(query)
 
     if (!query.status) {
         return ReE(res, "Status is required", 400);

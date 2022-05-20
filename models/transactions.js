@@ -39,37 +39,13 @@ var completed_transactions = [
 ];
 
 module.exports.getPending = async function (req, callback) {
-    var query = req.query;
-
-    var getData = [];
-
-    if (query.type || query.currency) {
-        getData = pending_transactions.filter((item) => {
-            if ((query.type && query.type === item.type) || (query.currency && query.currency === item.currency)) {
-                return item;
-            }
-        });
-    } else {
-        getData = pending_transactions;
-    }
-    return getData;
+    var getData = pending_transactions;
+    return callback(getData);
 }
 
 module.exports.getCompleted = async function (req, callback) {
-    var query = req.query;
-
-    var getData = [];
-
-    if (query.type || query.currency) {
-        getData = completed_transactions.filter((item) => {
-            if ((query.type && query.type === item.type) || (query.currency && query.currency === item.currency)) {
-                return item;
-            }
-        });
-    } else {
-        getData = completed_transactions;
-    }
-    return getData;
+    var getData = completed_transactions;
+    return callback(getData);
 }
 
 
@@ -82,11 +58,27 @@ module.exports.getTransactions = async function (req, callback) {
 
     if (query.status === "pending") {
         await exports.getPending(req, async function (responseData) {
-            return callback({ code: 200, data: responseData });
+            var getData = responseData;
+
+            if (query.type) {
+                getData = getData.filter((item) => (item.type === query.type));
+            }
+            if (query.currency) {
+                getData = getData.filter((item) => (item.currency === query.currency));
+            }
+            return callback({ code: 200, data: getData });
         });
     } else {
         await exports.getCompleted(req, async function (responseData) {
-            return callback({ code: 200, data: responseData });
+            var getData = responseData;
+
+            if (query.type) {
+                getData = getData.filter((item) => (item.type === query.type));
+            }
+            if (query.currency) {
+                getData = getData.filter((item) => (item.currency === query.currency));
+            }
+            return callback({ code: 200, data: getData });
         });
     }
 }
